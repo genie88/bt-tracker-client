@@ -1,17 +1,15 @@
-# bittorrent-tracker [![travis][travis-image]][travis-url] [![npm][npm-image]][npm-url] [![downloads][downloads-image]][downloads-url] [![javascript style guide][standard-image]][standard-url]
+# bt-tracker-client [![travis][travis-image]][travis-url] [![npm][npm-image]][npm-url] [![downloads][downloads-image]][downloads-url] [![javascript style guide][standard-image]][standard-url]
 
-[travis-image]: https://img.shields.io/travis/webtorrent/bittorrent-tracker/master.svg
-[travis-url]: https://travis-ci.org/webtorrent/bittorrent-tracker
-[npm-image]: https://img.shields.io/npm/v/bittorrent-tracker.svg
-[npm-url]: https://npmjs.org/package/bittorrent-tracker
-[downloads-image]: https://img.shields.io/npm/dm/bittorrent-tracker.svg
-[downloads-url]: https://npmjs.org/package/bittorrent-tracker
+[travis-image]: https://img.shields.io/travis/allex/bt-tracker-client/master.svg
+[travis-url]: https://travis-ci.org/allex/bt-tracker-client
+[npm-image]: https://img.shields.io/npm/v/bt-tracker-client.svg
+[npm-url]: https://npmjs.org/package/bt-tracker-client
+[downloads-image]: https://img.shields.io/npm/dm/bt-tracker-client.svg
+[downloads-url]: https://npmjs.org/package/bt-tracker-client
 [standard-image]: https://img.shields.io/badge/code_style-standard-brightgreen.svg
 [standard-url]: https://standardjs.com
 
-#### Simple, robust, BitTorrent tracker (client & server) implementation
-
-![tracker visualization](img/img.png)
+#### Simple, robust, BitTorrent tracker (client) implementation
 
 Node.js implementation of a [BitTorrent tracker](https://wiki.theory.org/BitTorrentSpecification#Tracker_HTTP.2FHTTPS_Protocol), client and server.
 
@@ -24,7 +22,7 @@ This module is used by [WebTorrent](http://webtorrent.io).
 
 ## features
 
-- Includes client & server implementations
+- Includes client implementations
 - Supports all mainstream tracker types:
   - HTTP trackers
   - UDP trackers ([BEP 15](http://www.bittorrent.org/beps/bep_0015.html))
@@ -34,18 +32,13 @@ This module is used by [WebTorrent](http://webtorrent.io).
 - Robust and well-tested
   - Comprehensive test suite (runs entirely offline, so it's reliable)
   - Used by popular clients: [WebTorrent](http://webtorrent.io), [peerflix](https://www.npmjs.com/package/peerflix), and [playback](https://mafintosh.github.io/playback/)
-- Tracker statistics available via web interface at `/stats` or JSON data at `/stats.json`
 
 Also see [bittorrent-dht](https://www.npmjs.com/package/bittorrent-dht).
-
-### Tracker stats
-
-![Screenshot](img/trackerStats.png)
 
 ## install
 
 ```
-npm install bittorrent-tracker
+npm install bt-tracker-client
 ```
 
 ## usage
@@ -55,7 +48,7 @@ npm install bittorrent-tracker
 To connect to a tracker, just do this:
 
 ```js
-var Client = require('bittorrent-tracker')
+var Client = require('bt-tracker-client')
 
 var requiredOpts = {
   infoHash: new Buffer('012345678901234567890'), // hex string or Buffer
@@ -139,96 +132,12 @@ client.on('scrape', function (data) {
 })
 ```
 
-### server
-
-To start a BitTorrent tracker server to track swarms of peers:
-
-```js
-var Server = require('bittorrent-tracker').Server
-
-var server = new Server({
-  udp: true, // enable udp server? [default=true]
-  http: true, // enable http server? [default=true]
-  ws: true, // enable websocket server? [default=true]
-  stats: true, // enable web-based statistics? [default=true]
-  filter: function (infoHash, params, cb) {
-    // Blacklist/whitelist function for allowing/disallowing torrents. If this option is
-    // omitted, all torrents are allowed. It is possible to interface with a database or
-    // external system before deciding to allow/deny, because this function is async.
-
-    // It is possible to block by peer id (whitelisting torrent clients) or by secret
-    // key (private trackers). Full access to the original HTTP/UDP request parameters
-    // are available in `params`.
-
-    // This example only allows one torrent.
-
-    var allowed = (infoHash === 'aaa67059ed6bd08362da625b3ae77f6f4a075aaa')
-    if (allowed) {
-      // If the callback is passed `null`, the torrent will be allowed.
-      cb(null)
-    } else {
-      // If the callback is passed an `Error` object, the torrent will be disallowed
-      // and the error's `message` property will be given as the reason.
-      cb(new Error('disallowed torrent'))
-    }
-  }
-})
-
-// Internal http, udp, and websocket servers exposed as public properties.
-server.http
-server.udp
-server.ws
-
-server.on('error', function (err) {
-  // fatal server error!
-  console.log(err.message)
-})
-
-server.on('warning', function (err) {
-  // client sent bad data. probably not a problem, just a buggy client.
-  console.log(err.message)
-})
-
-server.on('listening', function () {
-  // fired when all requested servers are listening
-  console.log('listening on http port:' + server.http.address().port)
-  console.log('listening on udp port:' + server.udp.address().port)
-})
-
-// start tracker server listening! Use 0 to listen on a random free port.
-server.listen(port, hostname, onlistening)
-
-// listen for individual tracker messages from peers:
-
-server.on('start', function (addr) {
-  console.log('got start message from ' + addr)
-})
-
-server.on('complete', function (addr) {})
-server.on('update', function (addr) {})
-server.on('stop', function (addr) {})
-
-// get info hashes for all torrents in the tracker server
-Object.keys(server.torrents)
-
-// get the number of seeders for a particular torrent
-server.torrents[infoHash].complete
-
-// get the number of leechers for a particular torrent
-server.torrents[infoHash].incomplete
-
-// get the peers who are in a particular torrent swarm
-server.torrents[infoHash].peers
-```
-
-The http server will handle requests for the following paths: `/announce`, `/scrape`. Requests for other paths will not be handled.
-
 ## multi scrape
 
 Scraping multiple torrent info is possible with a static `Client.scrape` method:
 
 ```js
-var Client = require('bittorrent-tracker')
+var Client = require('bt-tracker-client')
 Client.scrape({ announce: announceUrl, infoHash: [ infoHash1, infoHash2 ]}, function (err, results) {
   results[infoHash1].announce
   results[infoHash1].infoHash
@@ -239,46 +148,6 @@ Client.scrape({ announce: announceUrl, infoHash: [ infoHash1, infoHash2 ]}, func
   // ...
 })
 ````
-
-## command line
-
-Install `bittorrent-tracker` globally:
-
-```sh
-$ npm install -g bittorrent-tracker
-```
-
-Easily start a tracker server:
-
-```sh
-$ bittorrent-tracker
-http server listening on 8000
-udp server listening on 8000
-ws server listening on 8000
-```
-
-Lots of options:
-
-```sh
-$ bittorrent-tracker --help
-  bittorrent-tracker - Start a bittorrent tracker server
-
-  Usage:
-    bittorrent-tracker [OPTIONS]
-
-  If no --http, --udp, or --ws option is supplied, all tracker types will be started.
-
-  Options:
-    -p, --port [number]  change the port [default: 8000]
-        --trust-proxy    trust 'x-forwarded-for' header from reverse proxy
-        --interval       client announce interval (ms) [default: 600000]
-        --http           enable http server
-        --udp            enable udp server
-        --ws             enable websocket server
-    -q, --quiet          only show error output
-    -s, --silent         show no output
-    -v, --version        print the current version
-```
 
 ## license
 

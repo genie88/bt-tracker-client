@@ -1,19 +1,15 @@
 {
   "name": "bt-tracker-client",
-  "description": "Simple, robust, BitTorrent tracker (client & server) implementation",
+  "description": "Simple, robust, BitTorrent tracker client implementation",
   "version": "0.0.1",
-  "author": {
-    "name": "WebTorrent, LLC",
-    "email": "feross@webtorrent.io",
-    "url": "https://webtorrent.io"
-  },
+  "author": "allex <allex.wxn@gmail.com> (http://iallex.com/)",
   "browser": {
     "./lib/common-node.js": false,
     "./lib/client/http-tracker.js": false,
     "./lib/client/udp-tracker.js": false
   },
   "bugs": {
-    "url": "https://github.com/webtorrent/bittorrent-tracker/issues"
+    "url": "https://github.com/allex/bt-tracker-client/issues"
   },
   "dependencies": {
     "bencode": "^2.0.0",
@@ -71,7 +67,7 @@
   "main": "lib/index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/webtorrent/bittorrent-tracker.git"
+    "url": "git://github.com/allex/bt-tracker-client.git"
   },
   "scripts": {
     "update-authors": "./tools/update-authors.sh",
