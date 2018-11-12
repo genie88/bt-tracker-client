@@ -18,8 +18,6 @@ clients. The requests include metrics from clients that help the tracker keep ov
 statistics about the torrent. The response includes a peer list that helps the client
 participate in the torrent swarm.
 
-This module is used by [WebTorrent](http://webtorrent.io).
-
 ## features
 
 - Includes client implementations
