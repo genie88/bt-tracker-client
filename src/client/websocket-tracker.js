@@ -46,7 +46,7 @@ class WebSocketTracker extends Tracker {
       return
     }
 
-    debug('announce', opts);
+    debug('announce', opts)
 
     const params = Object.assign({}, opts, {
       action: 'announce',

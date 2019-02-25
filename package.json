@@ -1,7 +1,7 @@
 {
   "name": "bt-tracker-client",
   "description": "Simple, robust, BitTorrent tracker client implementation",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "allex <allex.wxn@gmail.com> (http://iallex.com/)",
   "main": "lib/index.js",
   "repository": "allex/bt-tracker-client",
