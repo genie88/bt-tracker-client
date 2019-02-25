@@ -33,5 +33,5 @@ bower_components
 npm-debug.log
 yarn.lock
 package-lock.json
-dist
+lib
 coverage
