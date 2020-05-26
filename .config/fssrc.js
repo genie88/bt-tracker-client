@@ -53,6 +53,11 @@ export default {
       }
       return cfg
     },
+    resolve: {
+      alias: {
+        'readable-stream': require.resolve('rollup-plugin-node-builtins/src/es6/stream.js')
+      }
+    },
     commonjs: {
       sourceMap: false
     },

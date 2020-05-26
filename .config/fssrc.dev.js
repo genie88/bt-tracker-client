@@ -1,7 +1,6 @@
 import path from 'path'
 import fs from 'fs'
 import serve from 'rollup-plugin-dev-server'
-import livereload from 'rollup-plugin-livereload'
 import config from './fssrc'
 
 const devPlugins = [
