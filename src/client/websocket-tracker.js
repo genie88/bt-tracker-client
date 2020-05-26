@@ -263,6 +263,7 @@ class WebSocketTracker extends Tracker {
     }
 
     let peer
+    // 如果是远端peer发送过来的offer包
     if (data.offer && data.peer_id) {
       debug('creating peer (from remote offer)')
       peer = this._createPeer()
@@ -279,11 +280,14 @@ class WebSocketTracker extends Tracker {
         if (this._trackerId) params.trackerid = this._trackerId
         this._send(params)
       })
+      // 可以发送 webrtc offer, answer, or ice candidate 给远端peer，以创建两者之间的直接连接
       peer.signal(data.offer)
       this.client.emit('peer', peer)
     }
 
+    // 如果是远端peer发送过来的answer包
     if (data.answer && data.peer_id) {
+      // 查找当前answer包属于哪一个本地offer
       const offerId = common.binaryToHex(data.offer_id)
       peer = this.peers[offerId]
       if (peer) {
@@ -370,6 +374,9 @@ class WebSocketTracker extends Tracker {
       const offerId = randombytes(20).toString('hex')
       debug('creating peer (from _generateOffers)')
       const peer = self.peers[offerId] = self._createPeer({ initiator: true })
+      // 当需要发送 signaling data给远端peer的时候触发该事件
+      // initiator设置为true时，该事件立即被触发
+      // initiator设置为false时，当远端peer发送offer过来时触发(即远端调用 peer.signal(offer) 时触发 )
       peer.once('signal', offer => {
         offers.push({
           offer,
