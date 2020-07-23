@@ -41,8 +41,8 @@ class HTTPTracker extends Tracker {
 
     const params = Object.assign({}, opts, {
       compact: (opts.compact == null) ? 1 : opts.compact,
-      info_hash: this.client._infoHashBinary,
-      peer_id: this.client._peerIdBinary,
+      info_hash: this.client.infoHash,
+      peer_id: this.client.peerId,
       port: this.client._port
     })
     if (this._trackerId) params.trackerid = this._trackerId
@@ -65,7 +65,7 @@ class HTTPTracker extends Tracker {
       ? opts.infoHash.map(infoHash => {
         return infoHash.toString('binary')
       })
-      : (opts.infoHash && opts.infoHash.toString('binary')) || this.client._infoHashBinary
+      : (opts.infoHash && opts.infoHash.toString('binary')) || this.client.infoHash
     const params = {
       info_hash: infoHashes
     }

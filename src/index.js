@@ -40,13 +40,13 @@ class Client extends EventEmitter {
       ? opts.peerId
       : opts.peerId.toString('hex')
     this._peerIdBuffer = Buffer.from(this.peerId, 'hex')
-    this._peerIdBinary = this._peerIdBuffer.toString('binary')
+    this._peerIdBinary = this.peerId
 
     this.infoHash = typeof opts.infoHash === 'string'
       ? opts.infoHash.toLowerCase()
       : opts.infoHash.toString('hex')
     this._infoHashBuffer = Buffer.from(this.infoHash, 'hex')
-    this._infoHashBinary = this._infoHashBuffer.toString('binary')
+    this._infoHashBinary = this.infoHash
 
     debug('new client %s', this.infoHash)
 

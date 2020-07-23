@@ -1,7 +1,7 @@
 {
   "name": "bt-tracker-client",
   "description": "Simple, robust, BitTorrent tracker client implementation",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": "allex <allex.wxn@gmail.com> (http://iallex.com/)",
   "main": "lib/index.js",
   "repository": "allex/bt-tracker-client",
@@ -62,7 +62,7 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build": "babel src -d lib",
+    "build": "rollup-worker -c .config/fssrc.js",
     "start": "rollup-worker -c .config/fssrc.dev.js -w",
     "release": "rimraf ./lib && mkdir ./lib && rollup-worker -c .config/fssrc.js",
     "update-authors": "./tools/update-authors.sh",

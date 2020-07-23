@@ -50,8 +50,8 @@ class WebSocketTracker extends Tracker {
 
     const params = Object.assign({}, opts, {
       action: 'announce',
-      info_hash: this.client._infoHashBinary,
-      peer_id: this.client._peerIdBinary
+      info_hash: this.client.infoHash,
+      peer_id: this.client.peerId
     })
     if (this._trackerId) params.trackerid = this._trackerId
 
@@ -83,7 +83,7 @@ class WebSocketTracker extends Tracker {
       ? opts.infoHash.map(infoHash => {
         return infoHash.toString('binary')
       })
-      : (opts.infoHash && opts.infoHash.toString('binary')) || this.client._infoHashBinary
+      : (opts.infoHash && opts.infoHash.toString('binary')) || this.client.infoHash
     const params = {
       action: 'scrape',
       info_hash: infoHashes
@@ -221,15 +221,15 @@ class WebSocketTracker extends Tracker {
   }
 
   _onAnnounceResponse (data) {
-    if (data.info_hash !== this.client._infoHashBinary) {
+    if (data.info_hash !== this.client.infoHash) {
       debug(
         'ignoring websocket data from %s for %s (looking for %s: reused socket)',
-        this.announceUrl, common.binaryToHex(data.info_hash), this.client.infoHash
+        this.announceUrl, data.info_hash, this.client.infoHash
       )
       return
     }
 
-    if (data.peer_id && data.peer_id === this.client._peerIdBinary) {
+    if (data.peer_id && data.peer_id === this.client.peerId) {
       // ignore offers/answers from this client
       return
     }
@@ -257,7 +257,7 @@ class WebSocketTracker extends Tracker {
     if (data.complete != null) {
       const response = Object.assign({}, data, {
         announce: this.announceUrl,
-        infoHash: common.binaryToHex(data.info_hash)
+        infoHash: data.info_hash
       })
       this.client.emit('update', response)
     }
@@ -267,12 +267,12 @@ class WebSocketTracker extends Tracker {
     if (data.offer && data.peer_id) {
       debug('creating peer (from remote offer)')
       peer = this._createPeer()
-      peer.id = common.binaryToHex(data.peer_id)
+      peer.id = data.peer_id
       peer.once('signal', answer => {
         const params = {
           action: 'announce',
-          info_hash: this.client._infoHashBinary,
-          peer_id: this.client._peerIdBinary,
+          info_hash: this.client.infoHash,
+          peer_id: this.client.peerId,
           to_peer_id: data.peer_id,
           answer,
           offer_id: data.offer_id
@@ -288,10 +288,10 @@ class WebSocketTracker extends Tracker {
     // 如果是远端peer发送过来的answer包
     if (data.answer && data.peer_id) {
       // 查找当前answer包属于哪一个本地offer
-      const offerId = common.binaryToHex(data.offer_id)
+      const offerId = data.offer_id
       peer = this.peers[offerId]
       if (peer) {
-        peer.id = common.binaryToHex(data.peer_id)
+        peer.id = data.peer_id
         peer.signal(data.answer)
         this.client.emit('peer', peer)
 
@@ -318,7 +318,7 @@ class WebSocketTracker extends Tracker {
       // (separate from announce interval)
       const response = Object.assign(data[infoHash], {
         announce: this.announceUrl,
-        infoHash: common.binaryToHex(infoHash)
+        infoHash: infoHash
       })
       this.client.emit('scrape', response)
     })
@@ -380,7 +380,7 @@ class WebSocketTracker extends Tracker {
       peer.once('signal', offer => {
         offers.push({
           offer,
-          offer_id: common.hexToBinary(offerId)
+          offer_id: offerId
         })
         checkDone()
       })
@@ -405,7 +405,7 @@ class WebSocketTracker extends Tracker {
     const self = this
 
     opts = Object.assign({
-      trickle: false,
+      trickle: true,
       config: self.client._rtcConfig,
       wrtc: self.client._wrtc
     }, opts)
